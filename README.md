@@ -2,6 +2,14 @@
 
 Gotowe posty do social mediów z wpisów, wydarzeń i wizytówek na holistictherapists.ie.
 
+## Zrzuty ekranu
+
+| Facebook | Instagram | X | Grupy |
+|---|---|---|---|
+| ![Facebook](screenshots/facebook.png) | ![Instagram](screenshots/instagram.png) | ![X](screenshots/x.png) | ![Grupy](screenshots/groups.png) |
+
+*Przykładowe wydarzenie; w prawdziwym użyciu wtyczka czyta dane z otwartej strony.*
+
 ## Instalacja
 
 1. Rozpakuj `ht-share.zip` do folderu, którego nie będziesz usuwać.
