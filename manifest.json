@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Holistic Therapists – Share",
+  "short_name": "HT Share",
+  "version": "1.2.0",
+  "description": "Ready-made social posts for blog posts, events and listings on holistictherapists.ie – Facebook, Instagram, LinkedIn and X.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Share on social media",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "permissions": ["activeTab", "scripting", "storage", "downloads"]
+}
