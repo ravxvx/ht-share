@@ -6,7 +6,7 @@ const NETWORKS = {
   instagram: { label: 'Instagram', limit: 2200 },
   linkedin: { label: 'LinkedIn', limit: 3000 },
   x: { label: 'X', limit: 280 },
-  groups: { label: 'Grupy', limit: 0 }
+  groups: { label: 'Groups', limit: 0 }
 };
 
 const TOPICS = [
@@ -219,7 +219,7 @@ const ICON_IMG = '<svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h1
 function render() {
   const app = $('#app');
   const p = page;
-  const badge = { event: 'Wydarzenie', post: 'Wpis na blogu', listing: 'Wizytówka', page: 'Strona' }[p.type];
+  const badge = { event: 'Event', post: 'Blog post', listing: 'Practitioner listing', page: 'Page' }[p.type];
   const meta = p.event ? [shortDate(p.event.start), city(p) || p.event.place].filter(Boolean).join(' · ') : p.url.replace(/^https?:\/\/(www\.)?/, '');
   app.innerHTML = `
     <div class="preview">
@@ -230,15 +230,15 @@ function render() {
         <div class="preview__meta"></div>
       </div>
     </div>
-    ${!/holistictherapists\.ie$/.test(p.host || 'holistictherapists.ie') ? '<p class="hint">To nie jest strona holistictherapists.ie – teksty mogą wymagać poprawek.</p>' : ''}
+    ${!/holistictherapists\.ie$/.test(p.host || 'holistictherapists.ie') ? '<p class="hint">This is not a holistictherapists.ie page. The caption may need editing.</p>' : ''}
     <div class="tabs" role="tablist">
       ${Object.entries(NETWORKS).map(([k, n]) => `<button class="tab" role="tab" data-net="${k}" aria-selected="${k === current}">${n.label}</button>`).join('')}
     </div>
-    <textarea id="text" spellcheck="true" aria-label="Treść posta"></textarea>
+    <textarea id="text" spellcheck="true" aria-label="Post text"></textarea>
     <div class="counter"><span id="count"></span><span id="limit"></span></div>
     <div id="netHint"></div>
     <div class="actions" id="actions"></div>
-    <button class="regen" id="regen" type="button">Przywróć wygenerowany tekst</button>`;
+    <button class="regen" id="regen" type="button">Restore generated text</button>`;
   app.querySelector('.preview__title').textContent = p.title;
   app.querySelector('.preview__meta').textContent = meta;
   app.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => select(b.dataset.net)));
@@ -251,8 +251,8 @@ function count() {
   const t = texts[current] || '';
   const lim = NETWORKS[current].limit;
   const len = current === 'x' ? t.replace(/https?:\/\/\S+/g, 'x'.repeat(23)).length : t.length;
-  $('#count').textContent = len + ' znaków';
-  $('#limit').innerHTML = lim ? (len > lim ? `<span class="over">limit ${lim} przekroczony</span>` : 'limit ' + lim) : '';
+  $('#count').textContent = len + ' characters';
+  $('#limit').innerHTML = lim ? (len > lim ? `<span class="over">limit ${lim} exceeded</span>` : 'Limit: ' + lim) : '';
 }
 
 function select(net) {
@@ -266,31 +266,31 @@ function select(net) {
   document.body.classList.toggle('is-groups', net === 'groups');
   const enc = encodeURIComponent;
   if (net === 'facebook') {
-    hint.innerHTML = '<p class="hint">Facebook nie pozwala wpisać tekstu za Ciebie. Kliknij przycisk – tekst skopiuje się sam, w oknie Facebooka wklej go (Ctrl+V).</p>';
-    actions.innerHTML = `<button class="btn" id="go">${ICON_OPEN} Kopiuj i otwórz Facebook</button>`;
-    $('#go').onclick = async () => { await copy(texts.facebook); toast('Tekst skopiowany – wklej go w oknie Facebooka'); open('https://www.facebook.com/sharer/sharer.php?u=' + enc(page.url)); };
+    hint.innerHTML = '<p class="hint">Facebook does not allow this extension to fill in the post text through the share link. Click the button, then paste the copied caption (Ctrl+V) into Facebook.</p>';
+    actions.innerHTML = `<button class="btn" id="go">${ICON_OPEN} Copy and open Facebook</button>`;
+    $('#go').onclick = async () => { await copy(texts.facebook); toast('Caption copied. Paste it into Facebook.'); open('https://www.facebook.com/sharer/sharer.php?u=' + enc(page.url)); };
   } else if (net === 'linkedin') {
     hint.innerHTML = '';
-    actions.innerHTML = `<button class="btn" id="go">${ICON_OPEN} Otwórz LinkedIn</button><button class="btn btn--ghost" id="cp">${ICON_COPY} Kopiuj</button>`;
+    actions.innerHTML = `<button class="btn" id="go">${ICON_OPEN} Open LinkedIn</button><button class="btn btn--ghost" id="cp">${ICON_COPY} Copy</button>`;
     $('#go').onclick = async () => { await copy(texts.linkedin); open('https://www.linkedin.com/feed/?shareActive=true&text=' + enc(texts.linkedin)); };
-    $('#cp').onclick = async () => { await copy(texts.linkedin); toast('Skopiowano'); };
+    $('#cp').onclick = async () => { await copy(texts.linkedin); toast('Copied'); };
   } else if (net === 'x') {
     hint.innerHTML = '';
-    actions.innerHTML = `<button class="btn" id="go">${ICON_OPEN} Otwórz X</button><button class="btn btn--ghost" id="cp">${ICON_COPY} Kopiuj</button>`;
+    actions.innerHTML = `<button class="btn" id="go">${ICON_OPEN} Open X</button><button class="btn btn--ghost" id="cp">${ICON_COPY} Copy</button>`;
     $('#go').onclick = () => open('https://x.com/intent/post?text=' + enc(texts.x));
-    $('#cp').onclick = async () => { await copy(texts.x); toast('Skopiowano'); };
+    $('#cp').onclick = async () => { await copy(texts.x); toast('Copied'); };
   } else if (net === 'groups') {
     renderGroups(hint, actions);
   } else {
-    hint.innerHTML = '<p class="hint">Instagram nie przyjmuje postów z przeglądarki przez link. Skopiuj tekst i pobierz zdjęcie, a potem dodaj post w aplikacji lub w Meta Business Suite.</p>';
-    actions.innerHTML = `<button class="btn" id="cp">${ICON_COPY} Kopiuj tekst</button>${page.image ? `<button class="btn btn--ghost" id="img">${ICON_IMG} Pobierz zdjęcie</button>` : ''}`;
-    $('#cp').onclick = async () => { await copy(texts.instagram); toast('Skopiowano'); };
+    hint.innerHTML = '<p class="hint">Instagram does not support creating a post from this browser share link. Copy the caption and download the image, then create your post in Instagram or Meta Business Suite.</p>';
+    actions.innerHTML = `<button class="btn" id="cp">${ICON_COPY} Copy tekst</button>${page.image ? `<button class="btn btn--ghost" id="img">${ICON_IMG} Download image</button>` : ''}`;
+    $('#cp').onclick = async () => { await copy(texts.instagram); toast('Copied'); };
     const img = $('#img');
     if (img) {
       img.onclick = () => {
         const slug = (page.url.split('/').filter(Boolean).pop() || 'post').slice(0, 60);
         const ext = (page.image.match(/\.(jpe?g|png|webp)(\?|$)/i) || [, 'jpg'])[1];
-        if (chrome.downloads) chrome.downloads.download({ url: page.image, filename: 'holistic-' + slug + '.' + ext, saveAs: false }, () => toast('Zdjęcie zapisane w Pobranych'));
+        if (chrome.downloads) chrome.downloads.download({ url: page.image, filename: 'holistic-' + slug + '.' + ext, saveAs: false }, () => toast('Image saved to Downloads'));
         else open(page.image);
       };
     }
@@ -333,7 +333,7 @@ function networkOf(url) {
   if (/facebook\.com/i.test(url)) return 'Facebook';
   if (/linkedin\.com/i.test(url)) return 'LinkedIn';
   if (/(^|\/\/|\.)(x|twitter)\.com/i.test(url)) return 'X';
-  return 'Inna';
+  return 'Other';
 }
 
 /* Slightly different opening line per group, so the same post does not look copy-pasted everywhere. */
@@ -355,9 +355,9 @@ function variant(text, i) {
 
 function fmtAgo(ts) {
   const h = Math.round((Date.now() - ts) / 3600e3);
-  if (h < 1) return 'przed chwilą';
-  if (h < 24) return h + ' godz. temu';
-  return new Date(ts).toLocaleDateString('pl-PL', { day: 'numeric', month: 'short' });
+  if (h < 1) return 'just now';
+  if (h < 24) return h + ' hours ago';
+  return new Date(ts).toLocaleDateString('en-IE', { day: 'numeric', month: 'short' });
 }
 
 function renderGroups(hint, actions) {
@@ -365,28 +365,28 @@ function renderGroups(hint, actions) {
   const recent = postLog.filter((t) => Date.now() - t < 3600e3).length;
   let html = '';
   if (recent >= 4) {
-    html += `<p class="hint hint--warn">W ostatniej godzinie wrzuciłeś ten sam link do ${recent} grup. Zrób przerwę, żeby Facebook nie uznał tego za spam.</p>`;
+    html += `<p class="hint hint--warn">You have started sharing this link to ${recent} groups in the last hour. Take a break to avoid repetitive or spam-like posting.</p>`;
   }
   if (!groups.length) {
-    html += '<p class="hint">Nie masz jeszcze zapisanych grup. Dodaj grupy z Facebooka lub LinkedIn – wystarczy nazwa i link.</p>';
+    html += '<p class="hint">You have not added any groups yet. Add a Facebook or LinkedIn group using its name and URL.</p>';
   } else {
     html += '<ul class="groups">' + groups.map((g, i) => {
       const when = done[g.id];
       return `<li class="group${when ? ' group--done' : ''}">
         <span class="group__net group__net--${networkOf(g.url).toLowerCase()}">${networkOf(g.url) === 'X' ? 'X' : networkOf(g.url).slice(0, 2)}</span>
-        <span class="group__txt"><b></b><small>${when ? '✓ udostępnione ' + fmtAgo(when) : 'jeszcze nie udostępnione'}</small></span>
-        <button class="btn btn--small${when ? ' btn--ghost' : ''}" data-go="${i}" type="button">${when ? 'Jeszcze raz' : 'Kopiuj i otwórz'}</button>
-        <button class="group__del" data-del="${i}" type="button" title="Usuń grupę" aria-label="Usuń grupę">×</button>
+        <span class="group__txt"><b></b><small>${when ? '✓ Share started ' + fmtAgo(when) : 'Not shared yet'}</small></span>
+        <button class="btn btn--small${when ? ' btn--ghost' : ''}" data-go="${i}" type="button">${when ? 'Jeszcze raz' : 'Copy i otwórz'}</button>
+        <button class="group__del" data-del="${i}" type="button" title="Remove group" aria-label="Remove group">×</button>
       </li>`;
     }).join('') + '</ul>';
   }
   html += `<details class="addgroup"${groups.length ? '' : ' open'}>
-      <summary>+ Dodaj grupę</summary>
-      <input id="gName" type="text" placeholder="Nazwa, np. Holistic Ireland Community">
-      <input id="gUrl" type="url" placeholder="Link do grupy (Facebook, LinkedIn) lub społeczności X">
-      <button class="btn btn--small" id="gAdd" type="button">Zapisz grupę</button>
+      <summary>+ Add group</summary>
+      <input id="gName" type="text" placeholder="Name, e.g. Holistic Ireland Community">
+      <input id="gUrl" type="url" placeholder="Facebook or LinkedIn group URL, or X community URL">
+      <button class="btn btn--small" id="gAdd" type="button">Save group</button>
     </details>
-    <p class="hint hint--soft">Tekst z pola powyżej trafia do schowka, a grupa otwiera się w nowej karcie – kliknij „Utwórz post” i wklej (Ctrl+V). Każda grupa dostaje trochę inny pierwszy wiersz. Do społeczności X idzie krótki tekst z zakładki X.</p>`;
+    <p class="hint hint--soft">The caption above is copied to your clipboard and the group opens in a new tab. Open the post composer and paste (Ctrl+V). Each group can use a slightly different opening line. X communities use the shorter caption from the X tab.</p>`;
   hint.innerHTML = html;
   actions.innerHTML = '';
   hint.querySelectorAll('.group__txt b').forEach((b, i) => { b.textContent = groups[i].name; });
@@ -403,13 +403,13 @@ function renderGroups(hint, actions) {
     posted[page.url] = Object.assign({}, posted[page.url], { [g.id]: Date.now() });
     postLog = postLog.filter((t) => Date.now() - t < 86400e3).concat(Date.now());
     await savePosted();
-    toast('Tekst skopiowany – w grupie wklej go (Ctrl+V)');
+    toast('Caption copied. Paste it into the group post composer (Ctrl+V).');
     open(g.url);
     renderGroups(hint, actions);
   }));
   hint.querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', async () => {
     const g = groups[+b.dataset.del];
-    if (!confirm('Usunąć grupę „' + g.name + '”?')) return;
+    if (!confirm('Remove the group “' + g.name + '”?')) return;
     groups.splice(+b.dataset.del, 1);
     await saveGroups();
     renderGroups(hint, actions);
@@ -418,10 +418,10 @@ function renderGroups(hint, actions) {
     const name = $('#gName').value.trim();
     let url = $('#gUrl').value.trim();
     if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
-    if (!name || !/^https?:\/\/\S+\.\S+/.test(url)) { toast('Podaj nazwę i link do grupy'); return; }
+    if (!name || !/^https?:\/\/\S+\.\S+/.test(url)) { toast('Enter a group name and a valid URL.'); return; }
     groups.push({ id: 'g' + Date.now().toString(36), name, url });
     await saveGroups();
-    toast('Grupa zapisana');
+    toast('Group saved.');
     renderGroups(hint, actions);
   });
 }
@@ -450,7 +450,7 @@ $('#saveSettings').addEventListener('click', async () => {
   Object.keys(texts).forEach((k) => delete texts[k]);
   $('#settings').hidden = true;
   if (page) render();
-  toast('Zapisano ustawienia');
+  toast('Settings saved.');
 });
 
 (async () => {
@@ -462,7 +462,7 @@ $('#saveSettings').addEventListener('click', async () => {
     page = null;
   }
   if (!page || !page.title) {
-    $('#state').innerHTML = '<b>Otwórz wpis, wydarzenie lub wizytówkę</b>Wtyczka działa na stronach holistictherapists.ie (i innych zwykłych stronach www).';
+    $('#state').innerHTML = '<b>Open an article, event or practitioner listing</b>HT Share works on holistictherapists.ie and other standard websites.';
     return;
   }
   render();
