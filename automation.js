@@ -144,3 +144,31 @@ studio('schedulePost').addEventListener('click', async () => {
   } catch (error) { studioToast(error.message); }
 });
 studioInit();
+
+studio('checkUpdate').addEventListener('click', async () => {
+  const button = studio('checkUpdate');
+  const status = studio('updateStatus');
+  button.disabled = true; button.textContent = 'Checking GitHub…';
+  try {
+    const response = await fetch('https://raw.githubusercontent.com/ravxvx/ht-share/main/manifest.json', { cache: 'no-store' });
+    if (!response.ok) throw new Error('GitHub returned HTTP ' + response.status);
+    const latest = await response.json();
+    const installed = chrome.runtime.getManifest().version;
+    status.textContent = 'Installed: ' + installed + ' · Latest: ' + latest.version;
+    if (compareVersions(latest.version, installed) > 0) {
+      status.innerHTML = 'New version ' + escapeHtml(latest.version) + ' is available. <a href="https://github.com/ravxvx/ht-share/archive/refs/heads/main.zip" target="_blank" rel="noreferrer">Download update ZIP</a>.';
+      studioToast('A new HT Share version is available.');
+    } else {
+      studioToast('HT Share is up to date.');
+    }
+  } catch (error) { status.textContent = 'Update check failed: ' + error.message; }
+  finally { button.disabled = false; button.textContent = 'Check for extension updates'; }
+});
+function compareVersions(a, b) {
+  const left = String(a).split('.').map(Number), right = String(b).split('.').map(Number);
+  for (let i = 0; i < Math.max(left.length, right.length); i++) {
+    const diff = (left[i] || 0) - (right[i] || 0);
+    if (diff) return diff;
+  }
+  return 0;
+}
