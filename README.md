@@ -1,55 +1,68 @@
-# HT Share – wtyczka do Chrome
+# HT Share – Chrome Extension
 
-Gotowe posty do social mediów z wpisów, wydarzeń i wizytówek na holistictherapists.ie.
+Create ready-to-share social media posts from articles, events and practitioner listings on [holistictherapists.ie](https://www.holistictherapists.ie).
 
-## Zrzuty ekranu
+## Screenshots
 
-| Facebook | Instagram | X | Grupy |
+| Facebook | Instagram | X | Groups |
 |---|---|---|---|
-| ![Facebook](screenshots/facebook.png) | ![Instagram](screenshots/instagram.png) | ![X](screenshots/x.png) | ![Grupy](screenshots/groups.png) |
+| ![Facebook](screenshots/facebook.png) | ![Instagram](screenshots/instagram.png) | ![X](screenshots/x.png) | ![Groups](screenshots/groups.png) |
 
-*Przykładowe wydarzenie; w prawdziwym użyciu wtyczka czyta dane z otwartej strony.*
+*The screenshots use a sample event. In normal use, the extension reads information from the page currently open in your browser.*
 
-## Instalacja
+## Installation
 
-1. Rozpakuj `ht-share.zip` do folderu, którego nie będziesz usuwać.
-2. W Chrome otwórz `chrome://extensions`.
-3. Włącz **Tryb dewelopera** (prawy górny róg).
-4. Kliknij **Załaduj rozpakowane** i wskaż rozpakowany folder `ht-share`.
-5. Przypnij ikonę lotosu na pasku (ikona puzzla → pinezka).
+1. Download or clone this repository.
+2. Keep the extension folder in a location you will not delete.
+3. In Chrome, open `chrome://extensions`.
+4. Enable **Developer mode** in the top-right corner.
+5. Click **Load unpacked** and select the extension folder.
+6. Pin the lotus icon to your toolbar (Extensions menu → pin).
 
-Działa też w Brave i Edge (strona `brave://extensions` / `edge://extensions`).
+The extension also works in Brave and Microsoft Edge. Open `brave://extensions` or `edge://extensions` and follow the same steps.
 
-## Jak używać
+## How to use
 
-1. Otwórz wpis, wydarzenie lub wizytówkę na holistictherapists.ie.
-2. Kliknij ikonę lotosu.
-3. Wybierz Facebook, Instagram, LinkedIn albo X – tekst jest gotowy, możesz go poprawić.
-4. Kliknij przycisk:
-   - **Facebook** – tekst kopiuje się sam, otwiera się okno udostępniania; wklej tekst (Ctrl+V) i opublikuj.
-   - **LinkedIn / X** – otwiera się okno posta z wpisanym tekstem i linkiem.
-   - **Instagram** – kopiuj tekst i pobierz zdjęcie, potem dodaj post w aplikacji lub w Meta Business Suite.
+1. Open an article, event or practitioner listing on holistictherapists.ie.
+2. Click the HT Share lotus icon in your browser toolbar.
+3. Choose Facebook, Instagram, LinkedIn or X.
+4. Review and edit the generated caption.
+5. Use the relevant action:
+   - **Facebook** – the caption is copied to your clipboard and the Facebook sharing window opens. Paste the caption with Ctrl+V and publish it yourself.
+   - **LinkedIn / X** – open the platform's sharing interface and use the prepared text.
+   - **Instagram** – copy the caption and download the image, then create the post in Instagram or Meta Business Suite.
 
-Wtyczka niczego nie publikuje sama i nie potrzebuje haseł – korzysta z oficjalnych okien udostępniania, w których jesteś już zalogowany.
+HT Share does not publish posts automatically in this version and does not ask for your social media passwords. It opens the platforms in your existing signed-in browser session.
 
-## Grupy (zakładka „Grupy”)
+## Groups
 
-1. Kliknij **+ Dodaj grupę** i wpisz nazwę oraz link do grupy z Facebooka, LinkedIn albo społeczności X (`https://x.com/i/communities/…`; dostaje krótki tekst z zakładki X) (np. `https://www.facebook.com/groups/…`). Grupy zapisują się na stałe (synchronizują się z Twoim kontem Chrome).
-2. Na stronie wpisu lub wydarzenia otwórz zakładkę **Grupy** i przy wybranej grupie kliknij **Kopiuj i otwórz**.
-3. Tekst trafia do schowka, grupa otwiera się w nowej karcie – kliknij „Utwórz post” i wklej (Ctrl+V).
+1. Open the **Groups** tab.
+2. Select **Add group** and enter a name and the group's URL. Facebook groups, LinkedIn groups and X communities can be saved.
+3. Click **Copy and open** beside a saved group.
+4. HT Share copies the prepared text and opens the selected group in a new tab. Paste the text into the platform's post composer and publish it yourself.
 
-- Przy każdej grupie widać, czy ten post już tam był (✓ udostępnione…), żeby nie wrzucić go dwa razy.
-- Każda grupa dostaje trochę inny pierwszy wiersz („Coming up:”, „Join us –”…), żeby post nie wyglądał wszędzie identycznie.
-- Gdy w ciągu godziny wrzucisz link do 4 lub więcej grup, pojawi się ostrzeżenie – Facebook może zablokować publikowanie za spam.
-- Sprawdzaj zasady grup: wiele zakazuje autopromocji albo pozwala na nią tylko w wybrane dni.
+Additional group features:
+- See which destinations you have marked as shared for each source URL.
+- Use a slightly varied opening line for different groups.
+- See a warning when several group shares have been initiated within a short period. Always follow each group's promotion rules and avoid repetitive posting.
 
-## Ustawienia (ikona zębatki)
+The history records that you initiated the share workflow; it cannot independently verify that the platform accepted or published the post.
 
-- **Stałe hashtagi** – dodawane do każdego posta (domyślnie `#HolisticIreland #Wellbeing`).
-- **Emoji w postach** – włącz/wyłącz 🌿 📅 📍.
+## Settings
 
-Hashtagi tematyczne (#Reiki, #SoundBath, #Yoga…) i miasto (#Dublin, #Cork…) dobierają się same z tytułu i opisu.
+Click the settings icon to configure:
+- **Default hashtags** – appended to generated captions (default: `#HolisticIreland #Wellbeing`).
+- **Include emojis** – enable or disable emojis in generated captions.
 
-## Skąd bierze dane
+Topic hashtags (for example, #Reiki, #SoundBath and #Yoga) and Irish location hashtags (for example, #Dublin and #Cork) are selected from the page title and description.
 
-Z tagów Open Graph (tytuł, opis, zdjęcie) i ze schematu JSON-LD strony – przy wydarzeniach z daty i miejsca (schema Event z wtyczki HT Neon).
+## Where the extension gets its content
+
+HT Share reads Open Graph metadata (title, description and image) and JSON-LD structured data. For events, it can also read the event date, time and location from Event structured data.
+
+## Current limitations
+
+- This version prepares captions and opens sharing destinations; it does not autonomously publish posts.
+- Facebook and LinkedIn may change their sharing interfaces or restrict automated browser interaction.
+- Publishing to groups may be restricted by each platform, group settings or moderation rules.
+- Automatic scheduled posting, AI-generated copy through ChatGPT, and GitHub-based in-extension updates are not implemented in this version.
