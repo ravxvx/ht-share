@@ -77,3 +77,22 @@ body.is-groups .counter{display:none}
 .addgroup summary{font-size:13px;font-weight:600;color:var(--green-2);cursor:pointer}
 .addgroup input{display:block;width:100%;margin-top:7px;padding:7px 10px;border:1px solid var(--line);border-radius:9px}
 .addgroup .btn{margin-top:8px}
+
+/* HT Share 2.0 Studio */
+.automation{margin:12px 14px 0;padding:12px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.automation__head{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;color:var(--green);font-family:var(--serif);font-size:16px}
+.automation__head span{font:600 10px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--gold)}
+.studio-grid{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
+.automation label{display:flex;flex-direction:column;gap:4px;margin:7px 0;font-size:12px;font-weight:600;color:var(--muted)}
+.automation input[type=text],.automation input[type=url],.automation input[type=password],.automation input[type=datetime-local]{width:100%;min-width:0;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:12px}
+.automation input[type=checkbox]{accent-color:var(--green-2)}
+.automation .monitor-toggle{flex-direction:row;align-items:center;color:var(--ink)}
+.studio-note,.studio-status{margin:5px 0 8px;font-size:11px;color:var(--muted)}
+.studio-status{padding:6px 8px;border-radius:8px;background:#f4f5ef}
+.studio-action{width:100%;margin-top:5px}
+.studio-buttons{display:flex;gap:7px}
+.studio-divider{height:1px;margin:10px 0;background:var(--line)}
+.studio-label{display:block;font-size:12px;color:var(--green)}
+.schedule-list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.schedule-item{display:flex;justify-content:space-between;gap:8px;padding:7px 8px;border-radius:8px;background:#f4f5ef;font-size:11px}
+.schedule-item button{border:0;background:none;color:#a33;cursor:pointer}
