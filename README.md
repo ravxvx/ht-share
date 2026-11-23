@@ -25,13 +25,13 @@ The extension reads Open Graph metadata and JSON-LD structured data from the ope
 
 ## HT Share Studio – new in 2.0
 
-### AI caption generation and editing
-- Add your own OpenAI API key in the Studio.
-- Generate a fresh caption from the current page title, description, URL and available event details.
-- Improve an existing caption for the selected social platform.
-- Review and edit the result before sharing.
+### ChatGPT hand-off (no API)
+- HT Share prepares a prompt using the current page and selected social network.
+- Click **Create ChatGPT prompt** or **Improve with ChatGPT**.
+- The prompt is copied to your clipboard and ChatGPT opens in a new tab.
+- Paste the prompt into ChatGPT, copy its response, and paste it back into the HT Share caption editor.
 
-The API key is stored in Chrome local extension storage and is sent to OpenAI when you use an AI action. OpenAI API usage may incur charges under your own account. Do not share your key or use this feature on a shared browser profile.
+No OpenAI API key is required. This is a browser hand-off: you complete the prompt and copy the response manually. HT Share does not use the OpenAI API.
 
 ### New-content monitoring
 - Enable monitoring of the WordPress REST API feed.
@@ -62,7 +62,7 @@ Save Facebook groups, LinkedIn groups and X communities. HT Share copies a capti
 ## Privacy and permissions
 
 - No social media passwords are requested or stored.
-- AI use sends the caption and page details you choose to OpenAI using your API key.
+- ChatGPT hand-off opens the ChatGPT website; you choose what to paste and submit there.
 - Monitoring fetches the configured public WordPress feed.
 - Scheduled reminders are stored locally in Chrome extension storage.
 - The extension uses active-tab scripting, storage, downloads, alarms, notifications and limited host access for the website, OpenAI API and GitHub raw manifest.
@@ -70,7 +70,7 @@ Save Facebook groups, LinkedIn groups and X communities. HT Share copies a capti
 ## Current limitations
 
 - No unattended or direct social network publishing.
-- No background ChatGPT generation without your API key and explicit action.
+- No direct ChatGPT integration or unattended AI generation.
 - The default monitor checks WordPress posts, not every custom post type automatically.
 - Group sharing requires you to paste the prepared text and press Publish yourself.
 - The update checker detects a newer repository manifest and links to the ZIP; it does not silently replace extension files.
