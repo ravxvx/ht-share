@@ -2,14 +2,6 @@
 
 Create ready-to-share social media posts from articles, events and practitioner listings on [holistictherapists.ie](https://www.holistictherapists.ie).
 
-## Screenshots
-
-| Facebook | Instagram | X | Groups |
-|---|---|---|---|
-| ![Facebook](screenshots/facebook.png) | ![Instagram](screenshots/instagram.png) | ![X](screenshots/x.png) | ![Groups](screenshots/groups.png) |
-
-*The screenshots use a sample event. In normal use, the extension reads information from the page currently open in your browser.*
-
 ## Installation
 
 1. Download or clone this repository.
