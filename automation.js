@@ -4,7 +4,7 @@ const studio = id => document.getElementById(id);
 const defaultFeed = 'https://www.holistictherapists.ie/wp-json/wp/v2/posts?per_page=10&_fields=id,date,link,title,excerpt';
 
 async function studioInit() {
-  const local = await chrome.storage.local.get(['openAiKey','monitorEnabled','feedUrl','scheduledPosts','lastScanAt','lastScanError']);
+  const local = await chrome.storage.local.get(['monitorEnabled','feedUrl','scheduledPosts','lastScanAt','lastScanError']);
   studio('aiKey').value = local.openAiKey || '';
   studio('monitorEnabled').checked = !!local.monitorEnabled;
   studio('feedUrl').value = local.feedUrl || defaultFeed;
