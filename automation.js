@@ -5,7 +5,6 @@ const defaultFeed = 'https://www.holistictherapists.ie/wp-json/wp/v2/posts?per_p
 
 async function studioInit() {
   const local = await chrome.storage.local.get(['monitorEnabled','feedUrl','scheduledPosts','lastScanAt','lastScanError']);
-  studio('aiKey').value = local.openAiKey || '';
   studio('monitorEnabled').checked = !!local.monitorEnabled;
   studio('feedUrl').value = local.feedUrl || defaultFeed;
   studio('monitorStatus').textContent = local.lastScanError ? 'Last scan error: ' + local.lastScanError : (local.monitorEnabled ? 'Monitoring is enabled. Checks every 6 hours.' : 'Monitoring is off.');
