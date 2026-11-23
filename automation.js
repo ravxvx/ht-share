@@ -109,7 +109,7 @@ studio('schedulePost').addEventListener('click', async () => {
   if (!caption) { studioToast('Prepare a caption before scheduling.'); return; }
   if (!Number.isFinite(when) || when <= Date.now()) { studioToast('Choose a future date and time.'); return; }
   const title = caption.split('\n')[0].slice(0, 90) || 'Social media post';
-  const item = { id: crypto.randomUUID(), when, title, caption, url: location.href };
+  const item = { id: crypto.randomUUID(), when, title, caption, url: window.htShareGetCurrentPage?.()?.url || 'https://www.holistictherapists.ie' };
   try {
     const result = await chrome.runtime.sendMessage({ type:'HT_SCHEDULE_POST', item });
     if (!result?.ok) throw new Error(result?.error || 'Could not schedule reminder.');
