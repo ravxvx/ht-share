@@ -1,60 +1,76 @@
-# HT Share – Chrome Extension
+# HT Share 2.0 – Chrome Extension
 
-Create ready-to-share social media posts from articles, events and practitioner listings on [holistictherapists.ie](https://www.holistictherapists.ie).
+HT Share helps prepare, improve, monitor and schedule social media content for [holistictherapists.ie](https://www.holistictherapists.ie).
 
-## Installation
+## Install
 
-1. Download or clone this repository.
-2. Keep the extension folder in a location you will not delete.
-3. In Chrome, open `chrome://extensions`.
-4. Enable **Developer mode** in the top-right corner.
-5. Click **Load unpacked** and select the extension folder.
-6. Pin the lotus icon to your toolbar (Extensions menu → pin).
+1. Download the ZIP from the [latest main branch](https://github.com/ravxvx/ht-share/archive/refs/heads/main.zip).
+2. Extract the ZIP to a permanent folder.
+3. Open `chrome://extensions` in Chrome.
+4. Enable **Developer mode**.
+5. Select **Load unpacked** and choose the extracted `ht-share-main` folder.
+6. Pin HT Share to the browser toolbar.
 
-The extension also works in Brave and Microsoft Edge. Open `brave://extensions` or `edge://extensions` and follow the same steps.
+For an update, download and extract the new ZIP over a new folder, then use **Reload** on the HT Share card in `chrome://extensions` (or remove the old unpacked folder and load the new one).
 
-## How to use
+## Manual sharing
 
-1. Open an article, event or practitioner listing on holistictherapists.ie.
-2. Click the HT Share lotus icon in your browser toolbar.
-3. Choose Facebook, Instagram, LinkedIn or X.
-4. Review and edit the generated caption.
-5. Use the relevant action:
-   - **Facebook** – the caption is copied to your clipboard and the Facebook sharing window opens. Paste the caption with Ctrl+V and publish it yourself.
-   - **LinkedIn / X** – open the platform's sharing interface and use the prepared text.
-   - **Instagram** – copy the caption and download the image, then create the post in Instagram or Meta Business Suite.
+1. Open an article, event or practitioner listing.
+2. Click HT Share.
+3. Choose Facebook, Instagram, LinkedIn, X or Groups.
+4. Edit the generated caption.
+5. Copy/open the platform workflow and publish after reviewing it.
 
-HT Share does not publish posts automatically in this version and does not ask for your social media passwords. It opens the platforms in your existing signed-in browser session.
+The extension reads Open Graph metadata and JSON-LD structured data from the open page. It creates topic and Irish location hashtags from the available title and description.
 
-## Groups
+## HT Share Studio – new in 2.0
 
-1. Open the **Groups** tab.
-2. Select **Add group** and enter a name and the group's URL. Facebook groups, LinkedIn groups and X communities can be saved.
-3. Click **Copy and open** beside a saved group.
-4. HT Share copies the prepared text and opens the selected group in a new tab. Paste the text into the platform's post composer and publish it yourself.
+### AI caption generation and editing
+- Add your own OpenAI API key in the Studio.
+- Generate a fresh caption from the current page title, description, URL and available event details.
+- Improve an existing caption for the selected social platform.
+- Review and edit the result before sharing.
 
-Additional group features:
-- See which destinations you have marked as shared for each source URL.
-- Use a slightly varied opening line for different groups.
-- See a warning when several group shares have been initiated within a short period. Always follow each group's promotion rules and avoid repetitive posting.
+The API key is stored in Chrome local extension storage and is sent to OpenAI when you use an AI action. OpenAI API usage may incur charges under your own account. Do not share your key or use this feature on a shared browser profile.
 
-The history records that you initiated the share workflow; it cannot independently verify that the platform accepted or published the post.
+### New-content monitoring
+- Enable monitoring of the WordPress REST API feed.
+- HT Share checks every six hours and can also run a manual scan.
+- A browser notification appears when a newer post is detected.
 
-## Settings
+Default feed:
+`https://www.holistictherapists.ie/wp-json/wp/v2/posts?per_page=10&_fields=id,date,link,title,excerpt`
 
-Click the settings icon to configure:
-- **Default hashtags** – appended to generated captions (default: `#HolisticIreland #Wellbeing`).
-- **Include emojis** – enable or disable emojis in generated captions.
+The default feed monitors WordPress **posts** only. If events or practitioner listings are exposed through a separate public REST endpoint, you can enter that endpoint in the feed field. The first scan establishes a baseline; it does not notify for all existing posts.
 
-Topic hashtags (for example, #Reiki, #SoundBath and #Yoga) and Irish location hashtags (for example, #Dublin and #Cork) are selected from the page title and description.
+### Publishing calendar reminders
+- Choose a future date and time for a prepared caption.
+- HT Share stores the reminder and triggers a browser notification at the selected time.
+- Clicking the reminder opens the source page so you can complete publishing.
 
-## Where the extension gets its content
+**Important:** scheduled reminders are not automatic publishing. Facebook, LinkedIn, Instagram and X require approved API access and platform permissions for direct publishing. HT Share never claims a post has been published; you must complete and verify the publication yourself.
 
-HT Share reads Open Graph metadata (title, description and image) and JSON-LD structured data. For events, it can also read the event date, time and location from Event structured data.
+### GitHub update checker
+- Check the latest version in the repository's main branch.
+- If a newer manifest version is found, HT Share provides the ZIP download link.
+- Chrome extensions loaded unpacked still need to be updated/reloaded manually from `chrome://extensions`.
+
+## Groups and history
+
+Save Facebook groups, LinkedIn groups and X communities. HT Share copies a caption and opens the destination; paste it into the platform composer. The local history records that you initiated the share workflow, not that the platform accepted or published it.
+
+## Privacy and permissions
+
+- No social media passwords are requested or stored.
+- AI use sends the caption and page details you choose to OpenAI using your API key.
+- Monitoring fetches the configured public WordPress feed.
+- Scheduled reminders are stored locally in Chrome extension storage.
+- The extension uses active-tab scripting, storage, downloads, alarms, notifications and limited host access for the website, OpenAI API and GitHub raw manifest.
 
 ## Current limitations
 
-- This version prepares captions and opens sharing destinations; it does not autonomously publish posts.
-- Facebook and LinkedIn may change their sharing interfaces or restrict automated browser interaction.
-- Publishing to groups may be restricted by each platform, group settings or moderation rules.
-- Automatic scheduled posting, AI-generated copy through ChatGPT, and GitHub-based in-extension updates are not implemented in this version.
+- No unattended or direct social network publishing.
+- No background ChatGPT generation without your API key and explicit action.
+- The default monitor checks WordPress posts, not every custom post type automatically.
+- Group sharing requires you to paste the prepared text and press Publish yourself.
+- The update checker detects a newer repository manifest and links to the ZIP; it does not silently replace extension files.
