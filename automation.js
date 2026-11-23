@@ -28,68 +28,35 @@ function setCaption(value) {
   field.value = value;
   field.dispatchEvent(new Event('input', { bubbles: true }));
 }
-async function callOpenAI(prompt) {
-  const { openAiKey } = await chrome.storage.local.get('openAiKey');
-  if (!openAiKey) throw new Error('Add your OpenAI API key first.');
-  const response = await fetch('https://api.openai.com/v1/responses', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + openAiKey },
-    body: JSON.stringify({
-      model: 'gpt-4.1-mini',
-      instructions: 'You are a social media editor for Holistic Therapists Ireland. Write natural, engaging Irish English. Be accurate, inclusive and professional. Do not invent event details, prices, qualifications, claims or links. Return only the revised post, preserving factual information and the supplied URL.',
-      input: prompt,
-      max_output_tokens: 700
-    })
-  });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error?.message || 'OpenAI request failed (' + response.status + ').');
-  const output = (data.output || []).flatMap(item => item.content || []).filter(item => item.type === 'output_text').map(item => item.text).join('\n').trim();
-  if (!output) throw new Error('The AI response was empty.');
-  return output;
+function makeChatGPTPrompt(mode, caption, source, platform) {
+  if (mode === 'improve') return 'Improve this social media caption for ' + platform + '. Use natural Irish English. Preserve all facts and URLs. Return only the improved post.\n\n' + caption;
+  return [
+    'Create a complete social media post for ' + platform + ' for Holistic Therapists Ireland.',
+    'Use natural Irish English. Be engaging and professional. Do not invent facts, dates, prices, qualifications or claims.',
+    'Include a call to action and up to 5 relevant hashtags. Include the source URL except for Instagram, where say link in bio.',
+    'Return only the post text.',
+    'CONTENT TYPE: ' + (source.type || 'page'),
+    'TITLE: ' + source.title,
+    'DESCRIPTION: ' + (source.desc || ''),
+    'URL: ' + source.url,
+    'EVENT DETAILS: ' + JSON.stringify(source.event || {})
+  ].join('\n');
 }
-studio('saveAiKey').addEventListener('click', async () => {
-  const key = studio('aiKey').value.trim();
-  if (key && !key.startsWith('sk-')) { studioToast('That does not look like an OpenAI API key.'); return; }
-  await chrome.storage.local.set({ openAiKey: key });
-  studioToast(key ? 'AI key saved in this browser.' : 'AI key removed.');
-});
-
-studio('aiGenerate').addEventListener('click', async () => {
+async function handOffToChatGPT(mode) {
   const source = window.htShareGetCurrentPage?.();
-  if (!source?.title) { studioToast('Open an article, event or practitioner listing first.'); return; }
-  const button = studio('aiGenerate');
-  button.disabled = true; button.textContent = 'Generating caption…';
-  try {
-    const platform = document.querySelector('.tab[aria-selected="true"]')?.dataset.net || 'facebook';
-    const prompt = [
-      'Create a complete, engaging social media post for ' + platform + ' using only the source details below.',
-      'Write in natural Irish English. Adapt length and style to the platform. Include a clear invitation to read, attend or discover.',
-      'Do not invent prices, dates, claims, credentials or details. Include the source URL unless platform is Instagram; for Instagram say link in bio.',
-      'Suggest up to 5 relevant hashtags. Return only the post text.',
-      'CONTENT TYPE: ' + (source.type || 'page'),
-      'TITLE: ' + source.title,
-      'DESCRIPTION: ' + (source.desc || ''),
-      'URL: ' + source.url,
-      'EVENT DETAILS: ' + JSON.stringify(source.event || {})
-    ].join('\n');
-    const generated = await callOpenAI(prompt);
-    setCaption(generated);
-    studioToast('AI post generated. Review all details before sharing.');
-  } catch (error) { studioToast(error.message); }
-  finally { button.disabled = false; button.textContent = '✨ Generate a fresh caption with AI'; }
-});
-\nstudio('aiRewrite').addEventListener('click', async () => {
   const caption = currentCaption();
-  if (!caption) { studioToast('Generate or enter a caption first.'); return; }
-  const button = studio('aiRewrite');
-  button.disabled = true; button.textContent = 'Improving caption…';
+  if (mode === 'improve' && !caption) { studioToast('Generate or enter a caption first.'); return; }
+  if (mode === 'generate' && !source?.title) { studioToast('Open an article, event or practitioner listing first.'); return; }
+  const platform = document.querySelector('.tab[aria-selected="true"]')?.dataset.net || 'facebook';
+  const prompt = makeChatGPTPrompt(mode, caption, source || {}, platform);
   try {
-    const revised = await callOpenAI('Improve this social media caption. Keep it suitable for the selected platform and retain all factual details and URLs.\n\n' + caption);
-    setCaption(revised);
-    studioToast('AI caption ready. Review it before sharing.');
-  } catch (error) { studioToast(error.message); }
-  finally { button.disabled = false; button.textContent = '✨ Improve current caption with AI'; }
-});
+    await navigator.clipboard.writeText(prompt);
+    await chrome.tabs.create({ url: 'https://chatgpt.com/' });
+    studioToast('Prompt copied. Paste it into ChatGPT, then copy the result back here.');
+  } catch (error) { studioToast('Could not open ChatGPT: ' + error.message); }
+}
+studio('aiGenerate').addEventListener('click', () => handOffToChatGPT('generate'));
+studio('aiRewrite').addEventListener('click', () => handOffToChatGPT('improve'));
 studio('saveMonitor').addEventListener('click', async () => {
   const enabled = studio('monitorEnabled').checked;
   const feedUrl = studio('feedUrl').value.trim() || defaultFeed;
