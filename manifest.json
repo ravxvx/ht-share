@@ -21,6 +21,6 @@
     "128": "icons/icon-128.png"
   },
   "permissions": ["activeTab", "scripting", "storage", "downloads", "alarms", "notifications"],
-  "host_permissions": ["https://www.holistictherapists.ie/*", "https://holistictherapists.ie/*", "https://api.openai.com/*", "https://raw.githubusercontent.com/ravxvx/ht-share/*"],
+  "host_permissions": ["https://www.holistictherapists.ie/*", "https://holistictherapists.ie/*", "https://raw.githubusercontent.com/ravxvx/ht-share/*"],
   "background": { "service_worker": "background.js" }
 }
