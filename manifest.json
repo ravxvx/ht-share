@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "Holistic Therapists – Share",
   "short_name": "HT Share",
-  "version": "1.2.0",
-  "description": "Ready-made social posts for blog posts, events and listings on holistictherapists.ie – Facebook, Instagram, LinkedIn and X.",
+  "version": "1.2.1",
+  "description": "Create and share social media posts from articles, events and practitioner listings on holistictherapists.ie – Facebook, Instagram, LinkedIn and X.",
   "action": {
     "default_popup": "popup.html",
     "default_title": "Share on social media",
