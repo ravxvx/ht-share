@@ -24,13 +24,9 @@
   </section>
 
   <section class="automation" id="automation">
-    <div class="automation__head"><strong>HT Share Studio</strong><span>AI · Monitoring · Schedule</span></div>
-    <div class="studio-grid">
-      <label>OpenAI API key <input id="aiKey" type="password" autocomplete="off" placeholder="sk-…"></label>
-      <button class="btn btn--small" id="saveAiKey" type="button">Save key</button>
-    </div>
-    <p class="studio-note">Your key is stored locally in this browser. It is sent directly to OpenAI only when you use AI tools.</p>
-    <button class="btn btn--ghost studio-action" id="aiGenerate" type="button">✨ Generate a fresh caption with AI</button>\n    <button class="btn btn--ghost studio-action" id="aiRewrite" type="button">Improve current caption with AI</button>
+    <div class="automation__head"><strong>HT Share Studio</strong><span>ChatGPT · Monitoring · Schedule</span></div>
+    
+    <button class="btn btn--ghost studio-action" id="aiGenerate" type="button">✨ Create ChatGPT prompt</button>\n    <button class="btn btn--ghost studio-action" id="aiRewrite" type="button">Improve with ChatGPT</button>
     <div class="studio-divider"></div>
     <label class="monitor-toggle"><input id="monitorEnabled" type="checkbox"> Monitor new website articles</label>
     <label>WordPress content feed URL <input id="feedUrl" type="url" placeholder="https://www.holistictherapists.ie/wp-json/wp/v2/posts?per_page=10"></label>
