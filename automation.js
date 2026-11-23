@@ -53,7 +53,32 @@ studio('saveAiKey').addEventListener('click', async () => {
   await chrome.storage.local.set({ openAiKey: key });
   studioToast(key ? 'AI key saved in this browser.' : 'AI key removed.');
 });
-studio('aiRewrite').addEventListener('click', async () => {
+
+studio('aiGenerate').addEventListener('click', async () => {
+  const source = window.htShareGetCurrentPage?.();
+  if (!source?.title) { studioToast('Open an article, event or practitioner listing first.'); return; }
+  const button = studio('aiGenerate');
+  button.disabled = true; button.textContent = 'Generating caption…';
+  try {
+    const platform = document.querySelector('.tab[aria-selected="true"]')?.dataset.net || 'facebook';
+    const prompt = [
+      'Create a complete, engaging social media post for ' + platform + ' using only the source details below.',
+      'Write in natural Irish English. Adapt length and style to the platform. Include a clear invitation to read, attend or discover.',
+      'Do not invent prices, dates, claims, credentials or details. Include the source URL unless platform is Instagram; for Instagram say link in bio.',
+      'Suggest up to 5 relevant hashtags. Return only the post text.',
+      'CONTENT TYPE: ' + (source.type || 'page'),
+      'TITLE: ' + source.title,
+      'DESCRIPTION: ' + (source.desc || ''),
+      'URL: ' + source.url,
+      'EVENT DETAILS: ' + JSON.stringify(source.event || {})
+    ].join('\n');
+    const generated = await callOpenAI(prompt);
+    setCaption(generated);
+    studioToast('AI post generated. Review all details before sharing.');
+  } catch (error) { studioToast(error.message); }
+  finally { button.disabled = false; button.textContent = '✨ Generate a fresh caption with AI'; }
+});
+\nstudio('aiRewrite').addEventListener('click', async () => {
   const caption = currentCaption();
   if (!caption) { studioToast('Generate or enter a caption first.'); return; }
   const button = studio('aiRewrite');
