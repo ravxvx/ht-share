@@ -283,7 +283,7 @@ function select(net) {
     renderGroups(hint, actions);
   } else {
     hint.innerHTML = '<p class="hint">Instagram does not support creating a post from this browser share link. Copy the caption and download the image, then create your post in Instagram or Meta Business Suite.</p>';
-    actions.innerHTML = `<button class="btn" id="cp">${ICON_COPY} Copy tekst</button>${page.image ? `<button class="btn btn--ghost" id="img">${ICON_IMG} Download image</button>` : ''}`;
+    actions.innerHTML = `<button class="btn" id="cp">${ICON_COPY} Copy caption</button>${page.image ? `<button class="btn btn--ghost" id="img">${ICON_IMG} Download image</button>` : ''}`;
     $('#cp').onclick = async () => { await copy(texts.instagram); toast('Copied'); };
     const img = $('#img');
     if (img) {
@@ -375,7 +375,7 @@ function renderGroups(hint, actions) {
       return `<li class="group${when ? ' group--done' : ''}">
         <span class="group__net group__net--${networkOf(g.url).toLowerCase()}">${networkOf(g.url) === 'X' ? 'X' : networkOf(g.url).slice(0, 2)}</span>
         <span class="group__txt"><b></b><small>${when ? '✓ Share started ' + fmtAgo(when) : 'Not shared yet'}</small></span>
-        <button class="btn btn--small${when ? ' btn--ghost' : ''}" data-go="${i}" type="button">${when ? 'Jeszcze raz' : 'Copy i otwórz'}</button>
+        <button class="btn btn--small${when ? ' btn--ghost' : ''}" data-go="${i}" type="button">${when ? 'Share again' : 'Copy and open'}</button>
         <button class="group__del" data-del="${i}" type="button" title="Remove group" aria-label="Remove group">×</button>
       </li>`;
     }).join('') + '</ul>';
