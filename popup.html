@@ -23,11 +23,31 @@
     <button class="btn btn--small" id="saveSettings" type="button">Save settings</button>
   </section>
 
-  <main id="app">
+  <section class="automation" id="automation">
+    <div class="automation__head"><strong>HT Share Studio</strong><span>AI · Monitoring · Schedule</span></div>
+    <div class="studio-grid">
+      <label>OpenAI API key <input id="aiKey" type="password" autocomplete="off" placeholder="sk-…"></label>
+      <button class="btn btn--small" id="saveAiKey" type="button">Save key</button>
+    </div>
+    <p class="studio-note">Your key is stored locally in this browser. It is sent directly to OpenAI only when you use AI tools.</p>
+    <button class="btn btn--ghost studio-action" id="aiRewrite" type="button">✨ Improve current caption with AI</button>
+    <div class="studio-divider"></div>
+    <label class="monitor-toggle"><input id="monitorEnabled" type="checkbox"> Monitor new website articles</label>
+    <label>WordPress content feed URL <input id="feedUrl" type="url" placeholder="https://www.holistictherapists.ie/wp-json/wp/v2/posts?per_page=10"></label>
+    <div class="studio-buttons"><button class="btn btn--small" id="saveMonitor" type="button">Save monitoring</button><button class="btn btn--small btn--ghost" id="scanNow" type="button">Scan now</button></div>
+    <p class="studio-status" id="monitorStatus">Monitoring is off.</p>
+    <div class="studio-divider"></div>
+    <strong class="studio-label">Schedule a reminder to publish</strong>
+    <label>Publish date and time <input id="scheduleWhen" type="datetime-local"></label>
+    <button class="btn studio-action" id="schedulePost" type="button">Add to publishing calendar</button>
+    <div id="scheduleList" class="schedule-list"></div>
+    <p class="studio-note">Scheduled reminders open the destination for you. They do not publish automatically; social networks require their own approved publishing APIs and permissions.</p>
+  </section>
+\n  <main id="app">
     <p class="state" id="state">Reading the current page…</p>
   </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="popup.js"></script>
+  <script src="popup.js"></script>\n  <script src="automation.js"></script>
 </body>
 </html>
