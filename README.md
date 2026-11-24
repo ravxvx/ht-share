@@ -23,7 +23,15 @@ For an update, download and extract the new ZIP over a new folder, then use **Re
 
 The extension reads Open Graph metadata and JSON-LD structured data from the open page. It creates topic and Irish location hashtags from the available title and description.
 
-## HT Share Studio – new in 2.0
+## HT Share Studio – version 2.1
+
+### MWAPI AI integration
+- Enter your MWAPI API key and the exact model ID shown in your MWAPI account.
+- Click **Save API settings**, then **Test connection**.
+- The test calls the OpenAI-compatible `/v1/models` endpoint. If model discovery is unavailable, enter the exact model ID manually.
+- **Generate with API** and **Improve with API** call `/v1/chat/completions` and put the result into the caption editor.
+- The API key is stored in local Chrome extension storage, not in the source code or GitHub repository. This is local browser storage, not a dedicated encrypted secrets vault; use a restricted key and do not share your Chrome profile.
+- API usage may incur charges under the MWAPI account. Review usage and model pricing in MWAPI before use.
 
 ### ChatGPT hand-off (no API)
 - HT Share prepares a prompt using the current page and selected social network.
@@ -31,7 +39,7 @@ The extension reads Open Graph metadata and JSON-LD structured data from the ope
 - The prompt is copied to your clipboard and ChatGPT opens in a new tab.
 - Paste the prompt into ChatGPT, copy its response, and paste it back into the HT Share caption editor.
 
-No OpenAI API key is required. This is a browser hand-off: you complete the prompt and copy the response manually. HT Share does not use the OpenAI API.
+No OpenAI API key is required for this option. This is a browser hand-off: you complete the prompt and copy the response manually.
 
 ### New-content monitoring
 - Enable monitoring of the WordPress REST API feed.
@@ -65,12 +73,12 @@ Save Facebook groups, LinkedIn groups and X communities. HT Share copies a capti
 - ChatGPT hand-off opens the ChatGPT website; you choose what to paste and submit there.
 - Monitoring fetches the configured public WordPress feed.
 - Scheduled reminders are stored locally in Chrome extension storage.
-- The extension uses active-tab scripting, storage, downloads, alarms, notifications and limited host access for the website, OpenAI API and GitHub raw manifest.
+- The extension uses active-tab scripting, storage, downloads, alarms, notifications and limited host access for the website, MWAPI and GitHub raw manifest.
 
 ## Current limitations
 
 - No unattended or direct social network publishing.
-- No direct ChatGPT integration or unattended AI generation.
+- The MWAPI integration requires an active key, an exact supported model ID, and provider-side API compatibility. It does not publish to social networks.
 - The default monitor checks WordPress posts, not every custom post type automatically.
 - Group sharing requires you to paste the prepared text and press Publish yourself.
 - The update checker detects a newer repository manifest and links to the ZIP; it does not silently replace extension files.
