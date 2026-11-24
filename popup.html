@@ -27,9 +27,10 @@
     <div class="automation__head"><strong>HT Share Studio</strong><span>AI · Monitoring · Schedule</span></div>
     <div class="ai-panel">
       <strong class="studio-label">AI writing assistant</strong>
-      <label>MWAPI model ID <input id="mwapiModel" type="text" placeholder="Paste the exact model ID from MWAPI"></label>
       <label>MWAPI API key <input id="mwapiKey" type="password" autocomplete="off" placeholder="Paste your MWAPI key"></label>
-      <div class="studio-buttons"><button class="btn btn--small" id="saveMwapi" type="button">Save API settings</button><button class="btn btn--small btn--ghost" id="testMwapi" type="button">Test connection</button></div>
+      <div class="studio-buttons"><button class="btn btn--small" id="saveMwapi" type="button">Save API settings</button><button class="btn btn--small btn--ghost" id="loadMwapiModels" type="button">Load models</button></div>
+      <label>Choose a model <select id="mwapiModelList"><option value="">Load models or enter an ID below</option></select></label>
+      <label>Model ID (manual) <input id="mwapiModel" type="text" placeholder="Enter exact model ID manually"></label>
       <p class="studio-status" id="mwapiStatus">MWAPI is not configured.</p>
       <div class="studio-buttons"><button class="btn btn--small" id="apiGenerate" type="button">Generate with API</button><button class="btn btn--small btn--ghost" id="apiRewrite" type="button">Improve with API</button></div>
       <p class="studio-note">API key is stored in this Chrome profile only. API usage may incur charges. Keep your key private.</p>
