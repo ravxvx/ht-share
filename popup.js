@@ -43,7 +43,8 @@ const DEMO = {
 const $ = (s) => document.querySelector(s);
 let page = null;
 let settings = { tags: '#HolisticIreland #Wellbeing', emoji: true };
-let current = 'facebook';\nwindow.htShareGetCurrentPage = () => page;
+let current = 'facebook';
+window.htShareGetCurrentPage = () => page;
 const texts = {};
 
 /* ---------- read the page ---------- */
