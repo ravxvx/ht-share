@@ -2,7 +2,7 @@
 
 const studio = id => document.getElementById(id);
 const defaultFeed = 'https://www.holistictherapists.ie/wp-json/wp/v2/posts?per_page=10&_fields=id,date,link,title,excerpt';
-const MWAPI_DEFAULT_BASE = 'https://api.mwapi.dev/v1';
+const MWAPI_DEFAULT_BASE = 'https://api.mwapi.dev';
 
 async function studioInit() {
   const local = await chrome.storage.local.get(['monitorEnabled','feedUrl','scheduledPosts','lastScanAt','lastScanError','mwapiBaseUrl','mwapiModel']);
@@ -77,67 +77,41 @@ async function getMwapiSettings(requireKey = true) {
   if (!model) throw new Error('Enter the exact model ID shown in your MWAPI account.');
   return { key, baseUrl, model };
 }
-async function mwapiRequest(path, options = {}) {
+async function mwapiRequest(path, payload) {
   const { key, baseUrl } = await getMwapiSettings(false);
   if (!key) throw new Error('Enter and save your MWAPI API key first.');
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 45000);
   try {
     const response = await fetch(baseUrl + path, {
-      ...options,
-      signal: controller.signal,
-      headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json', 'Accept': 'application/json', ...(options.headers || {}) },
-      cache: 'no-store'
+      method: 'POST', signal: controller.signal,
+      headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload), cache: 'no-store'
     });
     const raw = await response.text();
     let data;
-    try { data = raw ? JSON.parse(raw) : {}; } catch { throw new Error('MWAPI returned a non-JSON response (HTTP ' + response.status + '). Check the API base URL.'); }
-    if (!response.ok) {
-      const detail = data.error?.message || data.message || data.detail || ('HTTP ' + response.status);
-      throw new Error(String(detail).slice(0, 500));
-    }
+    try { data = raw ? JSON.parse(raw) : {}; } catch { throw new Error('MWAPI returned non-JSON (HTTP ' + response.status + ').'); }
+    if (!response.ok) throw new Error(data.error?.message || data.message || data.detail || ('HTTP ' + response.status));
     return data;
   } catch (error) {
     if (error.name === 'AbortError') throw new Error('MWAPI request timed out after 45 seconds.');
-    if (error instanceof TypeError) throw new Error('Network/CORS error. Check the connection and whether MWAPI permits Chrome extension requests.');
+    if (error instanceof TypeError) throw new Error('Network/CORS error. Check connection and MWAPI browser access.');
     throw error;
   } finally { clearTimeout(timeout); }
-}
-function extractModelIds(data) {
-  const rows = Array.isArray(data) ? data : (data.data || data.models || data.items || []);
-  return rows.map(item => typeof item === 'string' ? item : item.id || item.name).filter(Boolean);
 }
 async function testMwapi() {
   const status = studio('mwapiStatus');
   const button = studio('testMwapi');
-  button.disabled = true;
-  status.textContent = 'Testing MWAPI connection…';
+  button.disabled = true; status.textContent = 'Testing MWAPI Messages API…';
   try {
-    const { baseUrl, key } = await getMwapiSettings(false);
-    if (!key) throw new Error('Save your MWAPI API key first.');
-    const response = await fetch(baseUrl + '/models', {
-      headers: { 'Authorization': 'Bearer ' + key, 'Accept': 'application/json' },
-      cache: 'no-store'
-    });
-    const raw = await response.text();
-    let data;
-    try { data = raw ? JSON.parse(raw) : {}; } catch { throw new Error('The /models endpoint did not return JSON (HTTP ' + response.status + ').'); }
-    if (!response.ok) throw new Error(data.error?.message || data.message || 'MWAPI returned HTTP ' + response.status + '.');
-    const ids = extractModelIds(data);
-    if (ids.length) {
-      const modelInput = studio('mwapiModel');
-      if (!modelInput.value.trim()) modelInput.value = ids[0];
-      status.textContent = 'Connection successful. ' + ids.length + ' model(s) returned. Choose the exact model ID below.';
-    } else {
-      status.textContent = 'Authentication and /models endpoint responded, but no model IDs were found. Enter the model ID from your MWAPI dashboard.';
-    }
-    await chrome.storage.local.set({ mwapiBaseUrl: baseUrl });
+    const { model } = await getMwapiSettings(true);
+    const data = await mwapiRequest('/v1/messages', { model, max_tokens: 12, messages: [{ role: 'user', content: 'Reply with exactly: MWAPI connection successful' }] });
+    const reply = Array.isArray(data.content) ? data.content.filter(part => part.type === 'text').map(part => part.text).join(' ').trim() : '';
+    if (!reply) throw new Error('MWAPI responded, but no text block was returned.');
+    status.textContent = 'Connection successful · model: ' + (data.model || model); studioToast('MWAPI connection successful.');
     return true;
-  } catch (error) {
-    status.textContent = 'Connection test failed: ' + error.message;
-    studioToast(error.message);
-    return false;
-  } finally { button.disabled = false; }
+  } catch (error) { status.textContent = 'Connection test failed: ' + error.message; studioToast(error.message); return false; }
+  finally { button.disabled = false; }
 }
 function buildApiPrompt(mode, caption, source, platform) {
   if (mode === 'improve') {
@@ -167,28 +141,14 @@ async function generateWithMwapi(mode) {
     const source = currentSource();
     if (mode === 'improve' && !caption) throw new Error('Generate or enter a caption first.');
     if (mode === 'generate' && !source.title) throw new Error('Open an article, event or practitioner listing first.');
-    const { key, baseUrl, model } = await getMwapiSettings(true);
+    const { model } = await getMwapiSettings(true);
     const prompt = buildApiPrompt(mode, caption, source, currentPlatform());
-    const response = await fetch(baseUrl + '/chat/completions', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'system', content: 'You are a careful social media copywriter for Holistic Therapists Ireland. Follow the user instructions exactly. Never fabricate facts or medical claims.' },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.7,
-        stream: false
-      }),
-      cache: 'no-store'
+    const data = await mwapiRequest('/v1/messages', {
+      model, max_tokens: 1200,
+      system: 'You are a careful social media copywriter for Holistic Therapists Ireland. Follow instructions exactly. Never fabricate facts or medical claims.',
+      messages: [{ role: 'user', content: prompt }]
     });
-    const raw = await response.text();
-    let data;
-    try { data = raw ? JSON.parse(raw) : {}; } catch { throw new Error('MWAPI returned a non-JSON response (HTTP ' + response.status + ').'); }
-    if (!response.ok) throw new Error(data.error?.message || data.message || data.detail || ('MWAPI HTTP ' + response.status));
-    const content = data.choices?.[0]?.message?.content;
-    const result = Array.isArray(content) ? content.map(part => part.text || '').join('\n').trim() : String(content || '').trim();
+    const result = Array.isArray(data.content) ? data.content.filter(part => part.type === 'text').map(part => part.text || '').join('\n').trim() : '';
     if (!result) throw new Error('The API responded, but no text was found in choices[0].message.content.');
     setCaption(result);
     studio('mwapiStatus').textContent = 'MWAPI request successful · model: ' + (data.model || model);
