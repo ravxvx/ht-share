@@ -310,7 +310,7 @@ studio('schedulePost').addEventListener('click', async () => {
 });
 function compareVersions(a, b) {
   const parse = value => {
-    const match = String(value || '').trim().match(/^(\\d+)\\.(\\d+)\\.(\\d+)(?:[-+].*)?$/);
+    const match = String(value || '').trim().match(/^(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/);
     if (!match) throw new Error('Invalid version number received from GitHub: ' + value);
     return match.slice(1, 4).map(Number);
   };
