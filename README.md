@@ -28,8 +28,9 @@ The extension reads Open Graph metadata and JSON-LD structured data from the ope
 ### MWAPI AI integration
 - Enter your MWAPI API key and the exact model ID shown in your MWAPI account.
 - Click **Save API settings**, then **Test connection**.
-- The test calls the OpenAI-compatible `/v1/models` endpoint. If model discovery is unavailable, enter the exact model ID manually.
-- **Generate with API** and **Improve with API** call `/v1/chat/completions` and put the result into the caption editor.
+- The integration uses MWAPI's documented Messages route (`POST /v1/messages`). The exact model ID must be copied from your MWAPI account; model discovery is not assumed.
+- **Generate with API** and **Improve with API** send a non-streaming message request and put returned text into the caption editor.
+- MWAPI's public landing page describes one API key for its connected AI models and demonstrates the `/v1/messages` route. The precise key-header requirements and available model IDs must be confirmed by the in-extension connection test and your account's instructions.
 - The API key is stored in local Chrome extension storage, not in the source code or GitHub repository. This is local browser storage, not a dedicated encrypted secrets vault; use a restricted key and do not share your Chrome profile.
 - API usage may incur charges under the MWAPI account. Review usage and model pricing in MWAPI before use.
 
