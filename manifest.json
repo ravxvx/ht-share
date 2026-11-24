@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Holistic Therapists – Share",
   "short_name": "HT Share",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Prepare, improve and monitor social media content with optional MWAPI AI integration.",
   "action": {
     "default_popup": "popup.html",
