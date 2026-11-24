@@ -28,7 +28,7 @@
     <div class="ai-panel">
       <strong class="studio-label">AI writing assistant</strong>
       <label>MWAPI API key <input id="mwapiKey" type="password" autocomplete="off" placeholder="Paste your MWAPI key"></label>
-      <div class="studio-buttons"><button class="btn btn--small" id="saveMwapi" type="button">Save API settings</button><button class="btn btn--small btn--ghost" id="loadMwapiModels" type="button">Load models</button></div>
+      <div class="studio-buttons"><button class="btn btn--small" id="saveMwapi" type="button">Save API settings</button><button class="btn btn--small btn--ghost" id="loadMwapiModels" type="button">Load models</button><button class="btn btn--small btn--ghost" id="testMwapi" type="button">Test connection</button></div>
       <label>Choose a model <select id="mwapiModelList"><option value="">Load models or enter an ID below</option></select></label>
       <label>Model ID (manual) <input id="mwapiModel" type="text" placeholder="Enter exact model ID manually"></label>
       <p class="studio-status" id="mwapiStatus">MWAPI is not configured.</p>
@@ -48,7 +48,7 @@
     <strong class="studio-label">Schedule a reminder to publish</strong>
     <label>Publish date and time <input id="scheduleWhen" type="datetime-local"></label>
     <button class="btn studio-action" id="schedulePost" type="button">Add to publishing calendar</button>
-    <div id="scheduleList" class="schedule-list"></div>    <div class="studio-divider"></div>    <button class="btn btn--ghost studio-action" id="checkUpdate" type="button">Check for extension updates</button>    <p class="studio-status" id="updateStatus">Installed version: 2.1.0</p>
+    <div id="scheduleList" class="schedule-list"></div>    <div class="studio-divider"></div>    <button class="btn btn--ghost studio-action" id="checkUpdate" type="button">Check for extension updates</button>    <p class="studio-status" id="updateStatus">Checking installed version…</p>
     <p class="studio-note">Scheduled reminders open the destination for you. They do not publish automatically; social networks require their own approved publishing APIs and permissions.</p>
   </section>
   <main id="app">
