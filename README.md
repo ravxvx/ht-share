@@ -1,6 +1,9 @@
-# HT Share 2.2 – Chrome Extension
+# HT Share 2.2.1 – Chrome Extension
 
 HT Share helps prepare, improve, monitor and schedule social media content for [holistictherapists.ie](https://www.holistictherapists.ie).
+
+## What's new in 2.2.1
+- Small maintenance release to verify the GitHub update checker detects a newer manifest version.
 
 ## Install
 
@@ -23,7 +26,7 @@ For an update, download and extract the new ZIP over a new folder, then use **Re
 
 The extension reads Open Graph metadata and JSON-LD structured data from the open page. It creates topic and Irish location hashtags from the available title and description.
 
-## HT Share Studio – version 2.2
+## HT Share Studio – version 2.2.1
 
 ### MWAPI AI integration
 - Enter your MWAPI API key and the exact model ID shown in your MWAPI account.
