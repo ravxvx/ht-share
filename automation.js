@@ -77,6 +77,75 @@ async function getMwapiSettings(requireKey = true) {
   if (!model) throw new Error('Enter the exact model ID shown in your MWAPI account.');
   return { key, baseUrl, model };
 }
+
+async function loadMwapiModels() {
+  const button = studio('loadMwapiModels');
+  const status = studio('mwapiStatus');
+  const select = studio('mwapiModelList');
+  button.disabled = true;
+  button.textContent = 'Loading models…';
+  status.textContent = 'Loading models from MWAPI…';
+  try {
+    const local = await chrome.storage.local.get(['mwapiApiKey', 'mwapiBaseUrl', 'mwapiModel']);
+    const key = local.mwapiApiKey || '';
+    if (!key) throw new Error('Save your MWAPI API key first.');
+    const baseUrl = normalizeBaseUrl(local.mwapiBaseUrl || MWAPI_DEFAULT_BASE);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
+    let response;
+    try {
+      response = await fetch(baseUrl + '/v1/models', {
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer ' + key, 'Accept': 'application/json' },
+        cache: 'no-store',
+        signal: controller.signal
+      });
+      // Some Anthropic-compatible gateways use x-api-key for authenticated catalogue requests.
+      if (response.status === 401 || response.status === 403) {
+        response = await fetch(baseUrl + '/v1/models', {
+          method: 'GET',
+          headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'Accept': 'application/json' },
+          cache: 'no-store',
+          signal: controller.signal
+        });
+      }
+    } finally {
+      clearTimeout(timeout);
+    }
+    if (!response.ok) throw new Error('MWAPI model list returned HTTP ' + response.status + '.');
+    const payload = await response.json();
+    const entries = Array.isArray(payload) ? payload : (payload.data || payload.models || payload.items || []);
+    const models = entries.map(item => typeof item === 'string' ? item : (item.id || item.name || item.model))
+      .filter(value => typeof value === 'string' && value.trim())
+      .filter((value, index, all) => all.indexOf(value) === index)
+      .sort((a, b) => a.localeCompare(b));
+    if (!models.length) throw new Error('MWAPI returned no model IDs in the expected models list.');
+    const savedModel = (studio('mwapiModel').value || local.mwapiModel || '').trim();
+    select.replaceChildren();
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Select a model…';
+    select.appendChild(placeholder);
+    models.forEach(model => {
+      const option = document.createElement('option');
+      option.value = model;
+      option.textContent = model;
+      select.appendChild(option);
+    });
+    if (savedModel && models.includes(savedModel)) select.value = savedModel;
+    else if (models.length === 1) select.value = models[0];
+    if (!studio('mwapiModel').value && select.value) studio('mwapiModel').value = select.value;
+    status.textContent = 'Loaded ' + models.length + ' model(s). Choose one or enter a model ID manually.';
+    studioToast('MWAPI models loaded.');
+  } catch (error) {
+    const message = error.name === 'AbortError' ? 'Loading models timed out.' : error.message;
+    status.textContent = 'Could not load models: ' + message + ' You can still enter the model ID manually.';
+    studioToast(message);
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Load models';
+  }
+}
 async function mwapiRequest(path, payload) {
   const { key, baseUrl } = await getMwapiSettings(false);
   if (!key) throw new Error('Enter and save your MWAPI API key first.');
@@ -168,12 +237,19 @@ studio('saveMwapi').addEventListener('click', async () => {
     const current = await chrome.storage.local.get('mwapiApiKey');
     if (key) await chrome.storage.local.set({ mwapiApiKey: key });
     else if (!current.mwapiApiKey) throw new Error('Paste your MWAPI API key first.');
-    if (model) await chrome.storage.local.set({ mwapiModel: model });
+    const selectedModel = studio('mwapiModelList').value;
+    const modelToSave = model || selectedModel;
+    if (modelToSave) await chrome.storage.local.set({ mwapiModel: modelToSave });
     await chrome.storage.local.set({ mwapiBaseUrl: baseUrl });
     studio('mwapiKey').value = '';
     studio('mwapiStatus').textContent = 'MWAPI settings saved locally. Key is hidden; use Test connection.';
     studioToast('MWAPI settings saved.');
   } catch (error) { studioToast(error.message); }
+});
+
+studio('loadMwapiModels').addEventListener('click', loadMwapiModels);
+studio('mwapiModelList').addEventListener('change', () => {
+  if (studio('mwapiModelList').value) studio('mwapiModel').value = studio('mwapiModelList').value;
 });
 studio('testMwapi').addEventListener('click', testMwapi);
 studio('apiGenerate').addEventListener('click', () => generateWithMwapi('generate'));
