@@ -1,6 +1,12 @@
-# HT Share 2.2.1 – Chrome Extension
+# HT Share 2.3.0 – Chrome Extension
 
 HT Share helps prepare, improve, monitor and schedule social media content for [holistictherapists.ie](https://www.holistictherapists.ie).
+
+## What's new in 2.3.0
+- **Facebook: the caption is pasted for you.** *Open Facebook and paste* opens the share window and puts the caption into the post box. If Facebook changes its page and the text does not appear, it is still on your clipboard: click the post box and press Ctrl+V.
+- **Share buttons first.** HT Share Studio (AI, monitoring, reminders, updates) is now a collapsed section below the share area, so the caption and buttons are visible as soon as the popup opens.
+- **Reminders open the right page.** Clicking a publishing reminder opens the page the post was prepared for, not the home page.
+- **Pages as well as groups.** The *Groups & pages* tab accepts Facebook pages and LinkedIn company pages next to groups and X communities.
 
 ## What's new in 2.2.1
 - Small maintenance release to verify the GitHub update checker detects a newer manifest version.
@@ -20,13 +26,15 @@ For an update, download and extract the new ZIP over a new folder, then use **Re
 
 1. Open an article, event or practitioner listing.
 2. Click HT Share.
-3. Choose Facebook, Instagram, LinkedIn, X or Groups.
+3. Choose Facebook, Instagram, LinkedIn, X or Groups & pages.
 4. Edit the generated caption.
 5. Copy/open the platform workflow and publish after reviewing it.
 
 The extension reads Open Graph metadata and JSON-LD structured data from the open page. It creates topic and Irish location hashtags from the available title and description.
 
-## HT Share Studio – version 2.2.1
+## HT Share Studio
+
+Click **HT Share Studio** below the share area to expand it.
 
 ### MWAPI AI integration
 - Enter your MWAPI API key and the exact model ID shown in your MWAPI account.
@@ -67,9 +75,9 @@ The default feed monitors WordPress **posts** only. If events or practitioner li
 - If a newer manifest version is found, HT Share provides the ZIP download link.
 - Chrome extensions loaded unpacked still need to be updated/reloaded manually from `chrome://extensions`.
 
-## Groups and history
+## Groups, pages and history
 
-Save Facebook groups, LinkedIn groups and X communities. HT Share copies a caption and opens the destination; paste it into the platform composer. The local history records that you initiated the share workflow, not that the platform accepted or published it.
+Save Facebook groups and pages, LinkedIn groups and company pages, and X communities. For a Facebook page, switch to posting as the page before pasting. For a LinkedIn company page, save its admin link (`https://www.linkedin.com/company/<id>/admin/`) so the composer posts as the company. HT Share copies a caption and opens the destination; paste it into the platform composer. The local history records that you initiated the share workflow, not that the platform accepted or published it.
 
 ## Privacy and permissions
 
@@ -77,7 +85,7 @@ Save Facebook groups, LinkedIn groups and X communities. HT Share copies a capti
 - ChatGPT hand-off opens the ChatGPT website; you choose what to paste and submit there.
 - Monitoring fetches the configured public WordPress feed.
 - Scheduled reminders are stored locally in Chrome extension storage.
-- The extension uses active-tab scripting, storage, downloads, alarms, notifications and limited host access for the website, MWAPI and GitHub raw manifest.
+- The extension uses active-tab scripting, storage, downloads, alarms, notifications and limited host access for the website, Facebook (to paste the caption into the share window you opened), MWAPI and GitHub raw manifest.
 
 ## Current limitations
 

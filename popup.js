@@ -6,7 +6,7 @@ const NETWORKS = {
   instagram: { label: 'Instagram', limit: 2200 },
   linkedin: { label: 'LinkedIn', limit: 3000 },
   x: { label: 'X', limit: 280 },
-  groups: { label: 'Groups', limit: 0 }
+  groups: { label: 'Groups & pages', limit: 0 }
 };
 
 const TOPICS = [
@@ -267,9 +267,19 @@ function select(net) {
   document.body.classList.toggle('is-groups', net === 'groups');
   const enc = encodeURIComponent;
   if (net === 'facebook') {
-    hint.innerHTML = '<p class="hint">Facebook does not allow this extension to fill in the post text through the share link. Click the button, then paste the copied caption (Ctrl+V) into Facebook.</p>';
-    actions.innerHTML = `<button class="btn" id="go">${ICON_OPEN} Copy and open Facebook</button>`;
-    $('#go').onclick = async () => { await copy(texts.facebook); toast('Caption copied. Paste it into Facebook.'); open('https://www.facebook.com/sharer/sharer.php?u=' + enc(page.url)); };
+    hint.innerHTML = '<p class="hint">Opens Facebook and pastes the caption for you. If it does not appear, click the post box and press Ctrl+V.</p>';
+    actions.innerHTML = `<button class="btn" id="go">${ICON_OPEN} Open Facebook and paste</button>`;
+    $('#go').onclick = async () => {
+      await copy(texts.facebook);
+      const url = 'https://www.facebook.com/sharer/sharer.php?u=' + enc(page.url);
+      try {
+        // The popup closes as soon as the new tab opens, so the background worker opens the tab and pastes the text.
+        await chrome.runtime.sendMessage({ type: 'HT_FB_AUTOPASTE', url, text: texts.facebook });
+      } catch (e) {
+        toast('Caption copied. Paste it into Facebook (Ctrl+V).');
+        open(url);
+      }
+    };
   } else if (net === 'linkedin') {
     hint.innerHTML = '';
     actions.innerHTML = `<button class="btn" id="go">${ICON_OPEN} Open LinkedIn</button><button class="btn btn--ghost" id="cp">${ICON_COPY} Copy</button>`;
@@ -369,7 +379,7 @@ function renderGroups(hint, actions) {
     html += `<p class="hint hint--warn">You have started sharing this link to ${recent} groups in the last hour. Take a break to avoid repetitive or spam-like posting.</p>`;
   }
   if (!groups.length) {
-    html += '<p class="hint">You have not added any groups yet. Add a Facebook or LinkedIn group using its name and URL.</p>';
+    html += '<p class="hint">You have not added any groups or pages yet. Add a Facebook group or page, a LinkedIn group or company page, or an X community using its name and URL.</p>';
   } else {
     html += '<ul class="groups">' + groups.map((g, i) => {
       const when = done[g.id];
@@ -382,12 +392,12 @@ function renderGroups(hint, actions) {
     }).join('') + '</ul>';
   }
   html += `<details class="addgroup"${groups.length ? '' : ' open'}>
-      <summary>+ Add group</summary>
+      <summary>+ Add group or page</summary>
       <input id="gName" type="text" placeholder="Name, e.g. Holistic Ireland Community">
-      <input id="gUrl" type="url" placeholder="Facebook or LinkedIn group URL, or X community URL">
-      <button class="btn btn--small" id="gAdd" type="button">Save group</button>
+      <input id="gUrl" type="url" placeholder="Facebook group/page, LinkedIn group/company page, or X community URL">
+      <button class="btn btn--small" id="gAdd" type="button">Save</button>
     </details>
-    <p class="hint hint--soft">The caption above is copied to your clipboard and the group opens in a new tab. Open the post composer and paste (Ctrl+V). Each group can use a slightly different opening line. X communities use the shorter caption from the X tab.</p>`;
+    <p class="hint hint--soft">The caption above is copied to your clipboard and the group or page opens in a new tab. Open the post composer and paste (Ctrl+V). For a Facebook page, switch to posting as the page first; for a LinkedIn company page, use the admin link (linkedin.com/company/…/admin/). Each group can use a slightly different opening line. X communities use the shorter caption from the X tab.</p>`;
   hint.innerHTML = html;
   actions.innerHTML = '';
   hint.querySelectorAll('.group__txt b').forEach((b, i) => { b.textContent = groups[i].name; });

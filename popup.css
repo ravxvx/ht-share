@@ -80,7 +80,8 @@ body.is-groups .counter{display:none}
 
 /* HT Share 2.0 Studio */
 .automation{margin:12px 14px 0;padding:12px;border:1px solid var(--line);border-radius:14px;background:#fff}
-.automation__head{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;color:var(--green);font-family:var(--serif);font-size:16px}
+.automation{margin-bottom:14px}
+.automation__head{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;color:var(--green);font-family:var(--serif);font-size:16px}
 .automation__head span{font:600 10px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--gold)}
 .studio-grid{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
 .automation label{display:flex;flex-direction:column;gap:4px;margin:7px 0;font-size:12px;font-weight:600;color:var(--muted)}
@@ -104,3 +105,8 @@ body.is-groups .counter{display:none}
 .ai-panel .btn{font-size:11.5px;padding:0 9px}
 .ai-panel .studio-status{overflow-wrap:anywhere}
 button:disabled{opacity:.55;cursor:wait}
+
+.automation__head::-webkit-details-marker{display:none}
+.automation__head strong::before{content:'▸ ';color:var(--gold)}
+.automation[open] .automation__head strong::before{content:'▾ '}
+.automation:not([open]) .automation__head{margin-bottom:0}

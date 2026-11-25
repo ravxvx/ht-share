@@ -92,7 +92,10 @@ chrome.notifications.onClicked.addListener(async notificationId => {
     const { pendingContent } = await chrome.storage.local.get('pendingContent');
     if (pendingContent?.url) chrome.tabs.create({ url: pendingContent.url });
   } else if (notificationId.startsWith('ht-share-due-')) {
-    chrome.tabs.create({ url: SITE });
+    const id = notificationId.replace('ht-share-due-', '');
+    const { scheduledPosts = [] } = await chrome.storage.local.get('scheduledPosts');
+    const item = scheduledPosts.find(post => post.id === id);
+    chrome.tabs.create({ url: item?.url || SITE });
   }
   chrome.notifications.clear(notificationId);
 });
@@ -119,6 +122,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       await chrome.storage.local.set({ scheduledPosts });
       chrome.alarms.create('ht-share-schedule-' + item.id, { when: Number(item.when) });
       sendResponse({ ok: true });
+    } else if (message?.type === 'HT_FB_AUTOPASTE') {
+      // Answer first: opening the tab closes the popup.
+      sendResponse({ ok: true });
+      const tab = await chrome.tabs.create({ url: message.url });
+      pasteIntoFacebook(tab.id, String(message.text || ''));
     } else if (message?.type === 'HT_DELETE_SCHEDULE') {
       const { scheduledPosts = [] } = await chrome.storage.local.get('scheduledPosts');
       await chrome.storage.local.set({ scheduledPosts: scheduledPosts.filter(p => p.id !== message.id) });
@@ -128,3 +136,63 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   })().catch(error => sendResponse({ ok: false, error: String(error.message || error) }));
   return true;
 });
+
+/* ---------- Facebook: paste the caption into the share window ---------- */
+
+// Facebook's share link cannot carry post text, so after the share window loads we put the caption
+// into its post box, exactly as if the user had clicked it and pressed Ctrl+V.
+function pasteIntoFacebook(tabId, text) {
+  if (!text) return;
+  const deadline = Date.now() + 60000;
+  let busy = false;
+  let done = false;
+  const tryPaste = async () => {
+    if (done || busy) return;
+    busy = true;
+    try {
+      const [res] = await chrome.scripting.executeScript({ target: { tabId }, func: fbPasteInPage, args: [text] });
+      if (res?.result === 'pasted' || res?.result === 'already') finish();
+    } catch (e) { /* page not ready, login page or no permission yet */ }
+    busy = false;
+  };
+  const onUpdated = (id, info) => { if (id === tabId && info.status === 'complete') tryPaste(); };
+  const timer = setInterval(() => { if (Date.now() > deadline) finish(); else tryPaste(); }, 1500);
+  function finish() {
+    done = true;
+    clearInterval(timer);
+    chrome.tabs.onUpdated.removeListener(onUpdated);
+  }
+  chrome.tabs.onUpdated.addListener(onUpdated);
+}
+
+// Runs inside the Facebook tab. Waits for the post box, then inserts the caption.
+async function fbPasteInPage(text) {
+  if (!/(^|\.)facebook\.com$/.test(location.hostname)) return 'wrong-host';
+  if (window.__htSharePasted) return 'already';
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const visible = el => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+  const findBox = () => [...document.querySelectorAll('[contenteditable="true"][role="textbox"], div[contenteditable="true"], textarea')]
+    .find(el => visible(el) && !el.closest('[aria-label*="omment" i]'));
+  let box = null;
+  for (let i = 0; i < 20 && !(box = findBox()); i++) await sleep(500);
+  if (!box) return 'no-box';
+  const norm = s => (s || '').replace(/\s+/g, ' ').trim();
+  const current = () => box.value !== undefined ? box.value : box.innerText;
+  if (norm(current()).includes(norm(text).slice(0, 40))) { window.__htSharePasted = true; return 'already'; }
+  box.focus();
+  // 1) A real paste event – Facebook's editor handles this like Ctrl+V.
+  try {
+    const data = new DataTransfer();
+    data.setData('text/plain', text);
+    box.dispatchEvent(new ClipboardEvent('paste', { clipboardData: data, bubbles: true, cancelable: true }));
+  } catch (e) { /* older browsers */ }
+  await sleep(800);
+  // 2) Fallback: insert as typed text.
+  if (!norm(current()).includes(norm(text).slice(0, 40))) {
+    box.focus();
+    document.execCommand('insertText', false, text);
+    await sleep(300);
+  }
+  if (norm(current()).includes(norm(text).slice(0, 40))) { window.__htSharePasted = true; return 'pasted'; }
+  return 'failed';
+}
