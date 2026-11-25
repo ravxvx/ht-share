@@ -23,8 +23,13 @@
     <button class="btn btn--small" id="saveSettings" type="button">Save settings</button>
   </section>
 
-  <section class="automation" id="automation">
-    <div class="automation__head"><strong>HT Share Studio</strong><span>AI · Monitoring · Schedule</span></div>
+  
+  <main id="app">
+    <p class="state" id="state">Reading the current page…</p>
+  </main>
+
+  <details class="automation" id="automation">
+    <summary class="automation__head"><strong>HT Share Studio</strong><span>AI · Monitoring · Schedule</span></summary>
     <div class="ai-panel">
       <strong class="studio-label">AI writing assistant</strong>
       <label>MWAPI API key <input id="mwapiKey" type="password" autocomplete="off" placeholder="Paste your MWAPI key"></label>
@@ -50,10 +55,7 @@
     <button class="btn studio-action" id="schedulePost" type="button">Add to publishing calendar</button>
     <div id="scheduleList" class="schedule-list"></div>    <div class="studio-divider"></div>    <button class="btn btn--ghost studio-action" id="checkUpdate" type="button">Check for extension updates</button>    <p class="studio-status" id="updateStatus">Checking installed version…</p>
     <p class="studio-note">Scheduled reminders open the destination for you. They do not publish automatically; social networks require their own approved publishing APIs and permissions.</p>
-  </section>
-  <main id="app">
-    <p class="state" id="state">Reading the current page…</p>
-  </main>
+  </details>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="popup.js"></script>  <script src="automation.js"></script>
